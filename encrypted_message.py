@@ -67,40 +67,26 @@ def recreate_message(message_indices, alphabet):
 
 def decrypt(string):
     step1 = string[len(string) // 2:] + string[:len(string) // 2]
-    print(step1)
     lengths = find_numbers_helper(step1)
-    print(lengths)
     a_length = lengths[0]
     k_length = lengths[1]
-    print(a_length)
-    print(k_length)
     no_lengths = multiple_replace(step1, lengths)
-    print(no_lengths)
     key = get_key(no_lengths, int(k_length))
-    print(key)
     no_len_removed_key = remove_key(no_lengths, int(k_length))
-    print(no_len_removed_key)
     alphabet = no_len_removed_key[:int(a_length)]
     encrypted_message = no_len_removed_key[int(a_length):]
-    print(alphabet)
-    print(encrypted_message)
     compound_key = recreate_compound_key(encrypted_message, key)
-    print(compound_key)
     key_indices = get_indices(compound_key, alphabet)
     encr_mess_indices = get_indices(encrypted_message, alphabet)
-    print(key_indices)
-    print(encr_mess_indices)
     sum_indices = reverse_modulo(key_indices, encr_mess_indices, int(a_length))
-    print(sum_indices)
     message_indices = get_message_indices(key_indices, sum_indices)
-    print(message_indices)
     message = recreate_message(message_indices, alphabet)
-    print(message)
+    return message
 
 
 
 def main():
-    decrypt('o?uin uw?stutnfwat?~413~orwa? thfuisnnrsiu')
+    print(decrypt('o?uin uw?stutnfwat?~413~orwa? thfuisnnrsiu'))
 
 
 if __name__ == '__main__':
