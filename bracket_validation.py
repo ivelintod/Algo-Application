@@ -78,85 +78,43 @@ def check_validity(string):
     else:
         return False
 
-
-def distinct_sum(stripped_string):
-    sum_digits = 0
-    if len(stripped_string) == 1:
-        sum_digits += int(stripped_string[0])
-    if len(stripped_string) == 2:
-        sum_digits += 10 * int(stripped_string[0]) + int(stripped_string[1])
-    if len(stripped_string) == 3:
-        sum_digits += 100 * int(stripped_string[0]) + 10 * int(stripped_string[1]) + int(stripped_string[2])
-    return sum_digits
-
-
 def bracket_evaluation(string):
     if check_validity(string):
-        list_duplicate = list(string)
-        left_norm_brackets = []
-        right_norm_brackets = []
-        left_curly_brackets = []
-        right_curly_brackets = []
-        left_square_brackets = []
-        right_square_brackets = []
-        ultimate_sum = 0
-
-        for onb in list_duplicate:
-            if onb == '(':
-                left_norm_brackets.append(list_duplicate.index(onb))
-                list_duplicate[list_duplicate.index(onb)] = ' '
-            elif onb == ')':
-                right_norm_brackets.append(list_duplicate.index(onb))
-                list_duplicate[list_duplicate.index(onb)] = ' '
-            elif onb == '{':
-                left_curly_brackets.append(list_duplicate.index(onb))
-                list_duplicate[list_duplicate.index(onb)] = ' '
-            elif onb == '}':
-                right_curly_brackets.append(list_duplicate.index(onb))
-                list_duplicate[list_duplicate.index(onb)] = ' '
-            elif onb == '[':
-                left_square_brackets.append(list_duplicate.index(onb))
-                list_duplicate[list_duplicate.index(onb)] = ' '
-            elif onb == ']':
-                right_square_brackets.append(list_duplicate.index(onb))
-                list_duplicate[list_duplicate.index(onb)] = ' '
-
-        duplicate = string
-        ultimate_sum = 0
-        left_norm_inner_brackets = []
-        right_norm_inner_brackets = []
 
         if string[0] == '(' and string[len(string) - 1] == ')':
             if string[1:len(string) - 1] == '':
                 return 0
             else:
                 return string[1:len(string) - 1]
+
         if string[0] == '[' and string[len(string) - 1] == ']':
-            for i in range(len(left_norm_brackets)):
-                res = string[left_norm_brackets[i]:right_norm_brackets[i]][1:]
-                ultimate_sum += 2 * distinct_sum(res)
-                duplicate = duplicate.replace('({})'.format(res), ',')
-            numbers_clean = re.findall('\d+', duplicate)
-            for n in numbers_clean:
-                ultimate_sum += int(n)
-            return ultimate_sum
+            result = re.findall("\([^\d]*(\d+)[^\d]*\)", string)
+            string_dupl = string
+            total_sum = 0
+            for n in result:
+                total_sum += 2 * int(n)
+                string_dupl = string_dupl.replace('({})'.format(n), ',')
+            for i in re.findall('\d+', string_dupl):
+                total_sum += int(i)
+            return total_sum
 
         if string[0] == '{' and string[len(string) - 1] == '}':
-            for i in range(len(left_square_brackets)):
-                res = string[left_square_brackets[i]:right_square_brackets[i]][1:]
-                list_duplicate2 = list(res)
-                if '(' in list_duplicate2:
-                    left_norm_inner_brackets.append(list_duplicate2.index('('))
-                if ')' in list_duplicate2:
-                    right_norm_inner_brackets.append(list_duplicate2.index(')'))
-                for i in range(len(left_norm_inner_brackets)):
-                    new_res = res[left_norm_inner_brackets[i]:right_norm_inner_brackets[i]][1:]
-                    ultimate_sum += 2 * distinct_sum(new_res)
-                    duplicate = duplicate.replace('({})'.format(new_res), ',')
-                numbers_clean = re.findall('\d+', duplicate)
-                for n in numbers_clean:
-                    ultimate_sum += int(n)
-            return ultimate_sum
+            string_dupl = string
+            total_sum = 0
+            result = re.findall('\[([^]]*)\]', string)
+            for r in result:
+                string_dupl = string_dupl.replace('[{}]'.format(r), ',')
+            new_str = ','.join(result)
+            sub_result = re.findall("\([^\d]*(\d+)[^\d]*\)", new_str)
+            for i in sub_result:
+                total_sum += 4 * int(i)
+            for n in sub_result:
+                new_str = new_str.replace('({})'.format(n), ',')
+            for number in re.findall("\d+", new_str):
+                total_sum += 2 * int(number)
+            for num in re.findall("\d+", string_dupl):
+                total_sum += int(num)
+            return total_sum
 
     else:
         return 'NO'
@@ -170,6 +128,10 @@ def main():
     print(bracket_evaluation('{125[2][(1)][3]125}'))
     print(bracket_evaluation('{2[123]3}'))
     print(bracket_evaluation(''))
+    print(bracket_evaluation('{125()125}'))
+    print(bracket_evaluation('{123[123(123)123(123)]23[123]2}'))
+    print(bracket_evaluation('[123(123])'))
+    print(bracket_evaluation('{125[2][(1)][3]125}'))
     print(bracket_evaluation('{125()125}'))
 if __name__ == '__main__':
     main()
